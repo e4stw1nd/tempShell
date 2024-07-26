@@ -30,6 +30,15 @@ def create_pod(pod_name, image_name):
     except ApiException as e:
         print("Exception when calling CoreV1Api->create_namespaced_pod: %s\n" % e)
 
+def delete_pod(pod_name):
+    config.load_kube_config()
 
+    v1 = client.CoreV1Api()
+
+    try:
+        api_response = v1.delete_namespaced_pod(name=pod_name, namespace="default", body=client.V1DeleteOptions())
+        print("Pod deleted. status='%s'" % str(api_response.status))
+    except ApiException as e:
+        print("Exception deleting the pod %s\n" % e)
 
 image_name = "ubuntu"
