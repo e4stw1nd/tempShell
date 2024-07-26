@@ -1,6 +1,17 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
+import docker
+docker_client = docker.from_env()
 
+def build_and_push_docker_image(dockerfile_path, image_name):
+    try:
+        image, build_logs = docker_client.images.build(path=dockerfile_path, tag=image_name)
+        push_logs = docker_client.images.push(image_name)
+    except docker.errors.BuildError as e:
+        print("Error building Docker image: {e}")
+    except docker.errors.APIError as e:
+        print("Error pushing Docker image: {e}")
+        raise
 def create_pod(pod_name, image_name):
     
     config.load_kube_config()
